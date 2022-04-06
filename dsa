@@ -1,0 +1,28 @@
+Global Public-Key Components
+p prime number where 2L 1 < p < 2L
+ for 512 L 1024 and L a multiple of 64; i.e., bit
+length of between 512 and 1024 bits in increments of 64 bits
+
+q prime divisor of (p 1), where 2159 < q < 2160; i.e., bit length of 160 bits
+g = h(p 1)/q
+ mod p, where h is any integer with 1 < h < (p 1) such that h(p 1)/q
+ mod p > 1
+User's Private Key
+x random or pseudorandom integer with 0 < x < q
+User's Public Key
+y = gx mod p
+User's Per-Message Secret Number
+k = random or pseudorandom integer with 0 < k < q
+Signing
+r = (gk mod p) mod q
+s = [k-1 (H(M) + xr)] mod q
+Signature = (r, s)
+Verifying
+w = (s')-1 mod q
+u1 = [H(M')w] mod q
+u2 =(r')w mod q
+v = [(gu 1 yu 2) mod p] mod q
+TEST: v = r'
+M = message to be signed
+H(M) = hash of M using SHA-1
+M', r', s' = received versions of M, r, s

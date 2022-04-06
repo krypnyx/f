@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+using namespace std;
+int euclideanalgo(int a, int b) {
+while (b != 0) {
+int r = a % b; a = b; b = r; }
+return a; }
+int main()
+{
+int t;
+cout << "Enter the number of test cases : ";
+cin >> t;
+while (t--) {
+cout << "Input two numbers a and b : ";
+int a, b;
+cin >> a >> b;
+cout << "gcd(" << a << ", " << b << ") = ";
+cout << euclideanalgo(a, b) << endl; } }
+
+
+
+Pseudocode –
+Input -> a,b
+Output -> d = gcd(a,b)
+From extended euclidean algorithm
+a.xn + b.yn = d ---(1) 
+if b = 0
+x = 1, y = 0;
+return (d = a)
+And x1 and y1 are results for inputs b and a%b
+(b).x1 + (a%b).y1 = d 
+When we put a%b = (a - (⌊a/b⌋).b) in above, we get following. 
+Note that ⌊a/b⌋ is floor(a/b)
+(b).x1 + (a - (⌊a/b⌋).b).y1 = d
+After rearranging the terms we get -
+(a).y1 + b.(x1 - y1.⌊a/b⌋) ---(2)
+After comparing coefficients of 'a' and 'b' in (1) and 
+(2), we get following
+x = y1
+y = x1 - y1 * (a / b);
+return d
+
+#include <bits/stdc++.h>
+using namespace std;
+int ExtendedEuclidean(int a, int b, int &x, int &y) {
+if (b == 0) { x = 1; y = 0;
+return a; }
+int x1, y1;
+int d = ExtendedEuclidean(b, a % b, x1, y1);
+x = y1; y = x1 - y1 * (a / b);
+return d; }
+int main()
+{
+int t;
+cout << "Enter the number of test cases : ";
+cin >> t;
+while (t--) {
+cout << "Input two numbers a and b : ";
+int a, b;
+cin >> a >> b;
+cout << "gcd( " << a << "," << b << " ) = ";
+int x, y;
+cout << ExtendedEuclidean(a, b, x, y) << endl; } }

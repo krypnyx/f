@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+using namespace chrono;
+typedef int64_t ll;
+int32_t main() {
+	string mesg, key, emesg = "";
+	cout << "Enter message : ";
+	// cin >> mesg;
+	mesg = "god";
+	key = "abdsafcds";
+
+	cout << "Enter Key : ";;
+	// cin >> key;
+	ll n = sqrt(ll(key.length()));
+	ll mtx[n][n], vctm[n][1], vctc[n][1];
+	for (int i = 0; i < n; ++i)
+	{
+		/* code */
+		vctm[i][0] = (mesg[i] - 'a');
+		cout << vctm[i][0] << endl;
+	}
+	ll ptr = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		/* code */
+		for (int j = 0; j < n; j++) {
+			mtx[i][j] = (key[ptr++] - 'a');
+			cout << mtx[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+
+	for (int i = 0; i < n; ++i)
+	{
+		/* code */
+		for (int j = 0; j < 1; j++) {
+			vctc[i][j] = 0;
+			for (int k = 0; k < n; k++) {
+				vctc[i][j] += (mtx[i][k] * vctm[k][j]) ;
+			}
+			vctc[i][j] %= 26;
+		}
+	}
+
+	
+	for (int i = 0; i < n; ++i)
+	{
+		/* code */
+		emesg += char((vctc[i][0]) % 26 + 'a');
+	}
+	cout << "encrpted mesg : \n";
+	cout << emesg << endl;
+
+
+}

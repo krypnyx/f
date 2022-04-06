@@ -1,0 +1,88 @@
+Pseudocode –
+Input -> S (a sentence with alphabet characters)
+key = random value b/w (1 and 25)
+ENCRYPTION -
+For ith character in S :
+if S(i) is lowercase : 
+S(i) = (((S(i) - 'a') + key) + 26) % 26 + 'a'
+else S(i) is uppercase :
+S(i) = (((S(i) - 'A') + key) + 26) % 26 + 'A'
+return encrypted_string
+We iterate through the encrypted string while taking key value from 1 to 25
+and when decrypted string is equal to the original input we return the random
+key that was taken originally to encrypt the sentence.
+DECRYPTION -
+For ith character in S :
+if S(i) is lowercase : 
+S(i) = (((S(i) - 'a') - key) + 26) % 26 + 'a'
+else S(i) is uppercase :
+S(i) = (((S(i) - 'A') - key) + 26) % 26 + 'A'
+return decrypted_string
+if(decrypted_string == S)
+return key
+Code –
+#include <bits/stdc++.h>
+using namespace std;
+vector<string> readline(string s) {
+vector<string> v;
+string str = "";
+for (auto x : s)
+{
+if (x == '\n')
+break;
+if (x == ' ' || x == '\t' || x == ',') {
+if (str.size())
+v.push_back(str);
+str = ""; }
+else
+str += x; }
+if (str.size())
+v.push_back(str);
+return v; }
+string encrypt(string str, int key) {
+string s = str;
+for (int i = 0; i < s.size(); i++)
+{
+if (s[i] >= 'a' && s[i] <= 'z') s[i] = ((str[i] - 'a' + key) + 26) % 26 + 'a';
+else
+s[i] = ((str[i] - 'A' + key) + 26) % 26 + 'A'; }
+return s; }
+string decrypt(string str, int key) {
+string s = str;
+for (int i = 0; i < s.size(); i++)
+{
+if (s[i] >= 'a' && s[i] <= 'z') s[i] = ((str[i] - 'a' - key) + 26) % 26 + 'a';
+else
+s[i] = ((str[i] - 'A' - key) + 26) % 26 + 'A'; }
+return s; }
+int main()
+{
+srand(time(0));
+string str;
+cout << "Enter a text message to be cyphered : ";
+getline(cin, str);
+int key = (rand() % 25) + 1;
+vector<string> words = readline(str);
+vector<string> decypher;
+cout << "Cyphered text : ";
+for (auto it : words) {
+string temp = encrypt(it, key);
+decypher.push_back(temp);
+cout << temp << " "; }
+cout << "\n\n";
+cout << "After decrypting we found that original message was encrypted at 
+key : ";
+for (int i = 1; i < 26; i++)
+{
+vector<string> ans;
+for (auto it : decypher) {
+string temp = decrypt(it, i);
+ans.push_back(temp);
+}
+if (ans == words) {
+cout << i << endl;
+cout << "Original message : ";
+for (auto it : ans) {
+cout << it << " "; }
+cout << endl;
+break; } } }

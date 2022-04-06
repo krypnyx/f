@@ -1,0 +1,108 @@
+Pseudocode –
+Input -
+str = plaintext
+Algorithm -
+x and y - two large prime number
+n = x * y
+Totient function - ϕ(n) phi = (x-1) *(y -1)
+We select an integer e such that it is coprime to ϕ(n)
+and 1 < e < ϕ(n)
+e = findCoprime(phi) // function find a number e whose gcd(phi,e) = 1
+Public key = (e,n)
+d = modinverse(e,phi) // de = 1 % ϕ(n) Calculate d
+convert(str) - convert the entered plaintext into ascii
+Encryption -
+Given a plaintext "msg", represented as a array of number, the "ciphertext" is 
+calculated as:
+ciphertext = msg^{e} mod n
+Decryption -
+Using the private key (n,d), the plaintext can be found using:
+plaintext = ciphertext^{d} mod n
+#include <bits/stdc++.h>
+using namespace std;
+long long modinverse(long long a, long long m) {
+long long m0 = m;
+long long y = 0, x = 1;
+if (m == 1)
+return 0;
+while (a > 1) {
+long long q = a / m;
+long long t = m; m = fmod(a, m);
+a = t; t = y; y = x - q * y; x = t; }
+if (x < 0) x += m0;
+return x; }
+long long findCoprime(long long phi) {
+long long e = 2;
+while (e < phi) {
+if (__gcd((long long)e, (long long)phi) == 1)
+break;
+else
+e++; }
+return e; }
+long long binpow(long long a, long long b, long long m) { a %= m;
+long long res = 1;
+while (b > 0) {
+if (b & 1)
+res = res * a % m; a = a * a % m; b >>= 1; }
+return res; }
+vector<long long> convert(string str) {
+vector<long long> ans;
+for (char c : str) {
+long long ascii = (long long)c;
+ans.push_back(ascii);
+}
+return ans; }
+vector<long long> encrypt(vector<long long> msg, long long e, long long n) {
+vector<long long> cipher;
+for (long long d : msg) {
+long long encrypted = binpow(d, e, n);
+cipher.push_back(encrypted);
+}
+return cipher; }
+vector<long long> decrypt(vector<long long> msg, long long e, long long n) {
+vector<long long> dec;
+for (long long d : msg) {
+long long encrypted = binpow(d, e, n);
+dec.push_back(encrypted);
+}
+return dec; }
+int main()
+{
+long long x = 5659;
+long long y = 6143;
+long long n = x * y;
+long long phi = (x - 1) * (y - 1);
+long long e = findCoprime(phi);
+long long d = modinverse(e, phi);
+cout << "Enter message : ";
+string str;
+cin >> str;
+cout << "Public key : "
+<< "e = " << e << ", "
+<< "n = " << n << endl;
+cout << "Private key : "
+<< "d = " << d << ", "
+<< "n = " << n << endl;
+cout << endl;
+cout << "Original message in ASCII : ";
+vector<long long> msg = convert(str);
+for (auto x : msg) {
+cout << x; }
+cout << "\n\n";
+vector<long long> ciphertext = encrypt(msg, e, n);
+cout << "Encrypted message - ";
+for (long long d : ciphertext) {
+cout << d; }
+cout << "\n\n";
+cout << "Decrypted message -\n";
+vector<long long> decrypted = decrypt(ciphertext, d, n);
+cout << "in ASCII : ";
+for (long long d : decrypted) {
+cout << d; }
+cout << endl;
+cout << "in TEXT : ";
+for (long long d : decrypted) {
+char ch = d;
+cout << ch; }
+cout << endl;
+return 0; }

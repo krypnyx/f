@@ -1,0 +1,143 @@
+Bob 
+Key Generation
+ Choose a prime number ‘p’ 
+ Choose a generator ‘g’ 
+ Choose a privatekey ‘b’ from {2…p-2} 
+ Calculate publickey ‘B’ = gb mod p 
+ Publish key (p, g, B) 
+Decryption 
+ Receive the ciphertext values and 
+ephemeral keys. 
+ For each value : 
+o Calculate shared key 
+‘s’ = eb mod p 
+o Calculate modular inverse of s-1 mod 
+p 
+o Find plaintext value 
+‘p’ = ‘c’ * s-1 mod p 
+ Convert plaintext values to characters and 
+retrieve the plaintext.
+
+Alice
+Encryption
+ Select a plaintext of characters. Find the 
+value of each character such that a = 1, b 
+= 2 etc. 
+ For each character value : 
+o Choose a privatekey ‘a’ from {2…p-
+2} 
+o Calculate ephemeral key 
+‘e’ = ga mod p 
+o Calculate shared key 
+‘s’ = Ba mod p 
+o Find ciphertext value 
+‘c’ = char_value * s mod p 
+ Send the ciphertext values to Bob. 
+ Send the corresponding ephemeral keys to 
+Bob.
+
+#include<iostream> 
+#include<string> 
+#include<gmp.h> 
+using namespace std; 
+int fastExpo(int x, int y, int p){ 
+ int res = 1; 
+ x = x % p; 
+ if (x == 0) return 0; 
+ while (y > 0){ 
+ if (y & 1) 
+ res = (res*x) % p; 
+ y = y>>1; 
+ x = (x*x) % p; 
+ } 
+ return res; 
+} 
+bool millerrabin(int d, int n){ 
+ int a = 2 + rand() % (n - 4); 
+ int x = fastExpo(a, d, n); 
+ if (x == 1 || x == n-1) 
+ return true; 
+ while (d != n-1) 
+ { 
+ x = (x * x) % n; 
+ d *= 2; 
+ if (x == 1) return false; 
+ if (x == n-1) return true; 
+ } 
+ return false; 
+} 
+bool isPrime(int n){ 
+ if (n <= 3) return true; 
+ int d = n - 1; 
+ while (d % 2 == 0) 
+ d /= 2; 
+ if (!millerrabin(d, n)) 
+ return false; 
+ return true; 
+} 
+int modInverse(int a, int m){ 
+ for (int x = 1; x < m; x++) 
+ if (((a%m) * (x%m)) % m == 1) 
+ return x; 
+ return 1; 
+} 
+int main(){ 
+ int prime; 
+ int generator; 
+ int bob_privatekey; 
+ string plaintext; string returntext = ""; 
+ cout<<"\nenter a prime number : "; 
+ cin>>prime; 
+ while(!isPrime(prime)){ 
+ cout<<"\nthe number is composite. please enter another number.\n"; 
+ cout<<"\nenter a prime number : "; 
+ cin>>prime; 
+ } 
+ cout<<"\nthe number is prime by miller rabin algorithm.\n"; 
+ cout<<"\nenter its generator : "; 
+ cin>>generator; 
+ bob_privatekey = 2 + rand() % (prime-2); 
+ //bob_privatekey = 61; 
+ cout<<"\nbob's private key selected is "<<bob_privatekey<<"\n"; 
+ int bob_publickey = fastExpo(generator, bob_privatekey, prime); 
+ cout<<"\nfinal public key is : ("<<prime<<", "<<generator<<", "<<bob_publickey<<")\n"; 
+ cout<<"\nENTER PLAINTEXT : "; 
+ cin>>plaintext; 
+ int len = plaintext.length(); 
+ int ciphertext_values[len]; 
+ /* ENCRYPTION */ 
+ int charvalue; 
+ int alice_privatekey; 
+ int ephemeral_key[len]; 
+ int shared_key; 
+ for(int i=0; i<len; i++){ 
+ charvalue = plaintext[i] - 96; 
+ cout<<"\ncharvalue = "<<charvalue<<" ; "; 
+ alice_privatekey = 2 + rand() % (prime-2); 
+ cout<<"alice_privatekey = "<<alice_privatekey<<" ; "; 
+ ephemeral_key[i] = fastExpo(generator, alice_privatekey, prime); 
+ cout<<"ephemeral key = "<<ephemeral_key[i]<<" ; "; 
+ shared_key = fastExpo(bob_publickey, alice_privatekey, prime); 
+ cout<<"shared key = "<<shared_key; 
+ ciphertext_values[i] = (charvalue * shared_key)%prime; 
+ cout<<"\n"; 
+ } 
+ cout<<"\nCIPHERTEXT VALUES : "; 
+ for(int i=0; i<len; i++) 
+ cout<<ciphertext_values[i]<<" "; 
+ cout<<"\n"; 
+Page 2 of 3
+ /* DECRYPTION */ 
+ int shared_key_inverse; 
+ int plaintext_value; 
+ for(int i=0; i<len; i++){ 
+ cout<<"\nciphertext_value = "<<ciphertext_values[i]<<" ; "; 
+ shared_key = fastExpo(ephemeral_key[i], bob_privatekey, prime); 
+ cout<<"shared key = "<<shared_key<<" ; "; 
+ shared_key_inverse = modInverse(shared_key, prime); 
+ plaintext_value = (ciphertext_values[i] * shared_key_inverse) % prime; 
+ cout<<"plaintext_value = "<<plaintext_value<<"\n\n"; 
+ returntext.push_back(char(plaintext_value + 96)); 
+ } 
+ cout<<"RETRIEVED PLAINTEXT : "<<returntext<<"\n\n"; 
+}
